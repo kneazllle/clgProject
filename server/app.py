@@ -34,20 +34,20 @@ db = psycopg2.connect(database=os.getenv('DATABASE_NAME'), user=os.getenv('DATAB
 # # Get all the services
 
 
-@app.route('/api/services', methods=["GET"])
-def services():
-    cur = db.cursor()
-    cur.execute('SELECT * FROM services')
-    row_headers = [x[0] for x in cur.description]
-    rv = cur.fetchall()
-    json_data = []
-    for result in rv:
-        json_data.append(dict(zip(row_headers, result)))
-    cur.close()
-    print(json_data)
-    return jsonify(json_data)
+# @app.route('/api/services', methods=["GET"])
+# def services():
+#     cur = db.cursor()
+#     cur.execute('SELECT * FROM services')
+#     row_headers = [x[0] for x in cur.description]
+#     rv = cur.fetchall()
+#     json_data = []
+#     for result in rv:
+#         json_data.append(dict(zip(row_headers, result)))
+#     cur.close()
+#     print(json_data)
+#     return jsonify(json_data)
 
-# Get forms of a particular service
+# # Get forms of a particular service
 
 
 @app.route('/api/forms', methods=["GET"])
@@ -99,53 +99,53 @@ def get_form_details():
 
 
 # Return the contents of final doc
-@app.route('/api/final-content', methods=["POST"])
-def final_content():
-    form_details = request.json                         # Under Progress
-    form_id = form_details["form_id"]
-    # print(type(form_details))
-    print(form_id)
-    cur = db.cursor()
-    cur.execute("SELECT form_link FROM forms where form_id = %s;", [form_id])
-    row_headers = [x[0] for x in cur.description]
-    rv = cur.fetchall()
-    json_data = []
-    for result in rv:
-        json_data.append(dict(zip(row_headers, result)))
-    cur.close()
-    print(json_data[0]["form_link"])
-    response = requests.get(json_data[0]["form_link"])
-    directory = './docs'
+# @app.route('/api/final-content', methods=["POST"])
+# def final_content():
+#     form_details = request.json                         # Under Progress
+#     form_id = form_details["form_id"]
+#     # print(type(form_details))
+#     print(form_id)
+#     cur = db.cursor()
+#     cur.execute("SELECT form_link FROM forms where form_id = %s;", [form_id])
+#     row_headers = [x[0] for x in cur.description]
+#     rv = cur.fetchall()
+#     json_data = []
+#     for result in rv:
+#         json_data.append(dict(zip(row_headers, result)))
+#     cur.close()
+#     print(json_data[0]["form_link"])
+#     response = requests.get(json_data[0]["form_link"])
+#     directory = './docs'
     
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+#     if not os.path.exists(directory):
+#         os.makedirs(directory)
 
-    file_path = './docs/localfile.docx'
+    # file_path = './docs/localfile.docx'
 
-    with open(file_path, 'wb') as f:
-        f.write(response.content)
+    # with open(file_path, 'wb') as f:
+    #     f.write(response.content)
         
-    doc = Document('./docs/localfile.docx')
-    test = list([int(x) for x in form_details.keys() if x.isdigit()])
+    # doc = Document('./docs/localfile.docx')
+    # test = list([int(x) for x in form_details.keys() if x.isdigit()])
     
-    test.sort(reverse=True)
-    print(test)
-    for key in test:
-        old = '#'+str(key)
-        new = str(form_details[str(key)])
+    # test.sort(reverse=True)
+    # print(test)
+    # for key in test:
+    #     old = '#'+str(key)
+    #     new = str(form_details[str(key)])
         
-        for p in doc.paragraphs:
-            if old in p.text:
-                # print(old)
-                inline = p.runs
-                for i in range(len(inline)):
-                    if old in inline[i].text:
-                        # print(old)
-                        res = inline[i].text.replace(old, new)
-                        inline[i].text = res
-    doc.save("./docs/Output2.docx")
+    #     for p in doc.paragraphs:
+    #         if old in p.text:
+    #             # print(old)
+    #             inline = p.runs
+    #             for i in range(len(inline)):
+    #                 if old in inline[i].text:
+    #                     # print(old)
+    #                     res = inline[i].text.replace(old, new)
+    #                     inline[i].text = res
+    # doc.save("./docs/Output2.docx")
     
-    f = open('./docs/Output2.docx', 'rb')
+    # f = open('./docs/Output2.docx', 'rb')
     
     docx_content = mammoth.convert_to_html(f)
     # print(docx_content.value)
@@ -161,29 +161,29 @@ def final_content():
 # Return the final doc
 
 
-@app.route('/api/final-form', methods=["POST"])
-def final_form():
-    contents = request.get_json()
-    print(contents)
-    with open('docs/Output2.docx', 'w') as file:
-        file.write(contents)
-    # doc = Document('docs/localfile.docx')
-    # for key, value in form_details.items():
-    #     for paragraph in doc.paragraphs:
-    #         paragraph.text = paragraph.text.replace(
-    #             "#"+str(key)+'#', str(value))
+# @app.route('/api/final-form', methods=["POST"])
+# def final_form():
+#     contents = request.get_json()
+#     print(contents)
+#     with open('docs/Output2.docx', 'w') as file:
+#         file.write(contents)
+#     # doc = Document('docs/localfile.docx')
+#     # for key, value in form_details.items():
+#     #     for paragraph in doc.paragraphs:
+#     #         paragraph.text = paragraph.text.replace(
+#     #             "#"+str(key)+'#', str(value))
 
-    # doc.save("docs/Output2.docx")
-    return send_file('./docs/Output2.docx', as_attachment=True)
+#     # doc.save("docs/Output2.docx")
+#     return send_file('./docs/Output2.docx', as_attachment=True)
 
-@app.route('/api/chat', methods=['POST'])
-def chat():
-    user_input = request.json
+# @app.route('/api/chat', methods=['POST'])
+# def chat():
+#     user_input = request.json
     
-    # Choose one of the following models. get_response works using Bag of Words Principle while get_document works using Cosine Similarity
-    # response = get_response(user_input['user_chat'])
-    response = get_document(user_input['user_chat'])
-    return jsonify({'aiMessage': response})
+#     # Choose one of the following models. get_response works using Bag of Words Principle while get_document works using Cosine Similarity
+#     # response = get_response(user_input['user_chat'])
+#     response = get_document(user_input['user_chat'])
+#     return jsonify({'aiMessage': response})
 
 if __name__ == '__main__':
     app.run(debug=True)

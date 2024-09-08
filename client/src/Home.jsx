@@ -13,7 +13,6 @@
 import React, { useContext } from "react";
 import { useState } from "react";
 import Footer from "./footer";
-import Chatbot from "./chatbot";
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import { StepContext } from "./context/StepContext";
